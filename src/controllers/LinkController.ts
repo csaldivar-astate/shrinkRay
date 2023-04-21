@@ -31,14 +31,14 @@ async function shortenUrl(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  const { originalUrl } = req.body as { originalUrl: string };
+  const { originalUrl } = req.body as NewLinkRequest;
 
   const linkId = createLinkId(originalUrl, user.userId);
 
   try {
     const newLink = await createNewLink(originalUrl, linkId, user);
-    console.log(newLink);
-    res.status(201).json(newLink);
+    newLink.user.passwordHash = undefined;
+    res.redirect(`/api/users/${user.userId}/links`);
   } catch (err) {
     console.error(err);
     const databaseErrorMessage = parseDatabaseError(err);
@@ -47,22 +47,21 @@ async function shortenUrl(req: Request, res: Response): Promise<void> {
 }
 
 async function visitLink(req: Request, res: Response): Promise<void> {
-  const { targetLinkId } = req.params as { targetLinkId: string };
+  const { targetLinkId } = req.params as LinkParam;
 
   const link = await getLinkById(targetLinkId);
   if (!link) {
     res.sendStatus(404);
     return;
   }
-  console.log(link);
-  const updatedLink = await updateLinkVisits(link);
-  console.log(updatedLink);
+
+  await updateLinkVisits(link);
 
   res.redirect(301, link.originalUrl);
 }
 
 async function getLinks(req: Request, res: Response): Promise<void> {
-  const { targetUserId } = req.params as { targetUserId: string };
+  const { targetUserId } = req.params as UserIdParam;
 
   let links;
   if (!req.session.isLoggedIn || req.session.authenticatedUser.userId !== targetUserId) {
@@ -71,14 +70,16 @@ async function getLinks(req: Request, res: Response): Promise<void> {
     links = await getLinksByUserIdForOwnAccount(targetUserId);
   }
 
-  res.json(links);
+  const targetUser = await getUserById(targetUserId);
+  const { protocol } = req;
+  const host = req.get('host');
+  const url = `${protocol}://${host}`;
+
+  res.render('linksPage', { targetUser, links, url });
 }
 
 async function removeLink(req: Request, res: Response): Promise<void> {
-  const { targetUserId, targetLinkId } = req.params as {
-    targetUserId: string;
-    targetLinkId: string;
-  };
+  const { targetUserId, targetLinkId } = req.params as DeleteLinkRequest;
   const { isLoggedIn, authenticatedUser } = req.session;
   if (!isLoggedIn) {
     res.sendStatus(401);
@@ -98,7 +99,7 @@ async function removeLink(req: Request, res: Response): Promise<void> {
 
   await deleteLink(targetLinkId);
 
-  res.sendStatus(200);
+  res.redirect(`/api/users/${targetUserId}/links`);
 }
 
 export { shortenUrl, visitLink, getLinks, removeLink };

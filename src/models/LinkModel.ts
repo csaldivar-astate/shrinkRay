@@ -42,7 +42,7 @@ async function getLinksByUserId(userId: string): Promise<Link[]> {
   const links = await linkRepository
     .createQueryBuilder('link')
     .where({ user: { userId } })
-    .leftJoin('link.user', 'user')
+    .leftJoinAndSelect('link.user', 'user')
     .select(['link.linkId', 'link.originalUrl', 'user.userId', 'user.username', 'user.isAdmin'])
     .getMany();
 
@@ -53,7 +53,7 @@ async function getLinksByUserIdForOwnAccount(userId: string): Promise<Link[]> {
   const links = await linkRepository
     .createQueryBuilder('link')
     .where({ user: { userId } })
-    .leftJoin('link.user', 'user')
+    .leftJoinAndSelect('link.user', 'user')
     .select([
       'link.linkId',
       'link.originalUrl',
