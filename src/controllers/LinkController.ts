@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { parseDatabaseError } from '../utils/db-utils';
+import { parseDatabaseError } from '../utils/db-utils.js';
 import {
   createNewLink,
   getLinksByUserId,
@@ -8,8 +8,8 @@ import {
   getLinkById,
   getLinksByUserIdForOwnAccount,
   deleteLink,
-} from '../models/LinkModel';
-import { getUserById } from '../models/UserModel';
+} from '../models/LinkModel.js';
+import { getUserById } from '../models/UserModel.js';
 
 async function shortenUrl(req: Request, res: Response): Promise<void> {
   if (!req.session.isLoggedIn) {

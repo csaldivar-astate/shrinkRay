@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import argon2 from 'argon2';
-import { addNewUser, getUserByUsername } from '../models/UserModel';
-import { parseDatabaseError } from '../utils/db-utils';
+import { addNewUser, getUserByUsername } from '../models/UserModel.js';
+import { parseDatabaseError } from '../utils/db-utils.js';
 
 async function registerUser(req: Request, res: Response): Promise<void> {
   const { username, password } = req.body as AuthRequest;

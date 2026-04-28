@@ -1,12 +1,12 @@
-import './config'; // Load environment variables
+import './config.js'; // Load environment variables
 import 'express-async-errors'; // Enable default error handling for async errors
 
 import express, { Express } from 'express';
 
 import session from 'express-session';
 import connectSqlite3 from 'connect-sqlite3';
-import { registerUser, logIn } from './controllers/UserController';
-import { shortenUrl, visitLink, getLinks, removeLink } from './controllers/LinkController';
+import { registerUser, logIn } from './controllers/UserController.js';
+import { shortenUrl, visitLink, getLinks, removeLink } from './controllers/LinkController.js';
 
 const app: Express = express();
 const { PORT, COOKIE_SECRET } = process.env;

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Relation } from 'typeorm';
-import { Link } from './Link';
+import { Link } from './Link.js';
 
 @Entity()
 export class User {
